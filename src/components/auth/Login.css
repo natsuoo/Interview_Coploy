@@ -1,0 +1,259 @@
+.login-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100vw;
+  background-color: #ffffff;
+}
+
+.login-content {
+  width: 100%;
+  max-width: 100%;
+  padding: 40px;
+}
+
+.login-form-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  align-items: center;
+  gap: 20px;
+}
+
+.login-left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.login-right {
+  flex: 1;
+  width: 100%;
+}
+
+h1 {
+  color: #000000;
+  font-size: 18px;
+  margin-bottom: 40px;
+  text-align: center;
+  font-family: 'Urbanist', sans-serif;
+  font-weight: 400;
+}
+
+.login-form {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-family: 'Urbanist', sans-serif;
+}
+
+.input-group {
+  position: relative;
+}
+
+.login-form-title {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 100px;
+  border: 2px solid #f2f2f2;
+  height: 36px;
+  padding: 4px 12px;
+}
+
+.input-wrapper:focus-within {
+  border-color: #c0fd87;
+}
+
+.input-icon {
+  color: #e0e0e0;
+  display: flex;
+  margin-right: 8px;
+}
+
+.login-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: #000;
+  padding: 16px 0;
+  font-size: 14px;
+  outline: none;
+  font-family: 'Urbanist', sans-serif;
+}
+
+.login-input::placeholder {
+  color: transparent;
+  padding-left: 0px;
+}
+
+.input-wrapper label {
+  position: absolute;
+  left: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666;
+  font-size: 14px;
+  pointer-events: none;
+  transition: 0.2s ease all;
+}
+
+.login-input:focus ~ label,
+.login-input:not(:placeholder-shown) ~ label {
+  top: -2px;
+  font-size: 12px;
+  padding-left: 0px;
+  color: #000;
+  background: white;
+}
+
+.password-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding-right: 0px;
+  justify-content: center;
+  color: #8d8d8d;
+}
+
+.password-toggle svg {
+  width: 16px;
+  height: 16px;
+}
+
+.form-options {
+  margin-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.remember-email {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.custom-checkbox {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding-left: 30px;
+  cursor: pointer;
+  user-select: none;
+  gap: 8px;
+}
+
+.custom-checkbox input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkmark {
+  position: absolute;
+  left: 0;
+  height: 20px;
+  width: 20px;
+  background-color: #e0e0e0;
+  border: 1px solid #f2f2f2;
+  border-radius: 8px;
+  transition: all 0.2s ease-in-out;
+}
+
+.custom-checkbox input:checked ~ .checkmark {
+  background-color: #00f9f4;
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.custom-checkbox input:checked ~ .checkmark:after {
+  display: block;
+}
+
+.custom-checkbox .checkmark:after {
+  left: 6px;
+  top: 2px;
+  width: 4px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.login-button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 20px;
+  margin-top: 20px;
+}
+
+.login-button {
+  padding: 16px;
+  background: #ffe070;
+  width: 120px;
+  color: #000;
+  border: none;
+  border-radius: 100px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 400;
+  padding-bottom: 20px;
+  font-family: 'Urbanist', sans-serif;
+  transition: background-color 0.2s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.login-button:hover {
+  background: #000;
+  color: #fff;
+}
+
+.error-message {
+  color: rgb(141, 5, 5);
+  font-size: 12px;
+  margin-top: 6px;
+  display: block;
+  margin-left: 10px;
+}
+
+.input-wrapper.error {
+  border: 1px solid red;
+}
+
+.signup-link {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.signup-link a {
+  color: #000;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.signup-link a:hover {
+  text-decoration: underline;
+}

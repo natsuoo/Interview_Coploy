@@ -1,0 +1,181 @@
+.auth-form {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.input-group {
+  position: relative;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 100px;
+  border: 2px solid #f2f2f2;
+  height: 36px;
+  padding: 4px 12px;
+  transition: all 0.2s ease;
+}
+
+.input-wrapper:focus-within {
+  border-color: #c0fd87;
+}
+
+.input-wrapper.error {
+  border-color: #ff4d4f;
+}
+
+.input-icon {
+  color: #e0e0e0;
+  display: flex;
+  margin-right: 8px;
+}
+
+.auth-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: #000;
+  font-size: 14px;
+  outline: none;
+  padding: 8px 0;
+}
+
+.auth-input::placeholder {
+  color: transparent;
+}
+
+.input-wrapper label {
+  position: absolute;
+  left: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666;
+  font-size: 14px;
+  pointer-events: none;
+  transition: 0.2s ease all;
+  background: #fff;
+  padding: 0 4px;
+}
+
+.auth-input:focus ~ label,
+.auth-input:not(:placeholder-shown) ~ label {
+  top: -11px;
+  font-size: 12px;
+  color: #000;
+}
+
+.password-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: #8d8d8d;
+}
+
+.error-message {
+  color: #ff4d4f;
+  font-size: 12px;
+  margin-top: 4px;
+  margin-left: 12px;
+}
+
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 8px 0;
+}
+
+.custom-checkbox {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding-left: 28px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.custom-checkbox input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.checkmark {
+  position: absolute;
+  left: 0;
+  height: 18px;
+  width: 18px;
+  background-color: #fff;
+  border: 2px solid #e0e0e0;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.custom-checkbox input:checked ~ .checkmark {
+  background-color: #00f9f4;
+  border-color: #00f9f4;
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+  left: 5px;
+  top: 1px;
+  width: 4px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.custom-checkbox input:checked ~ .checkmark:after {
+  display: block;
+}
+
+.auth-button {
+  width: 100%;
+  padding: 12px;
+  background: #ffe070;
+  color: #000;
+  border: none;
+  border-radius: 100px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 8px;
+}
+
+.auth-button:hover {
+  background: #000;
+  color: #fff;
+}
+
+.auth-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.auth-link {
+  text-align: center;
+  margin-top: 16px;
+}
+
+.auth-link a {
+  color: #000;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.auth-link a:hover {
+  text-decoration: underline;
+}

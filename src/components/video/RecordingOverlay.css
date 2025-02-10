@@ -1,0 +1,75 @@
+.recording-overlay {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+  width: 120px;
+}
+
+.recording-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: rgba(0, 0, 0, 0.349);
+  padding: 6px 6px 6px 6px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.recording-indicator.warning {
+  background-color: rgba(255, 0, 0, 0.2);
+  animation: warning-pulse 1s ease-in-out infinite;
+}
+
+.recording-dot {
+  width: 14px;
+  height: 14px;
+  background-color: #ff4444;
+  border-radius: 50%;
+  margin-left: 4px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.recording-text {
+  color: white;
+  font-size: 14px;
+  font-weight: 400;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.time-remaining {
+  font-size: 12px;
+  opacity: 0.8;
+  font-family: 'Urbanist', sans-serif;
+  color: #fff;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes warning-pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
