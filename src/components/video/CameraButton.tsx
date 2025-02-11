@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { FiCamera, FiChevronDown } from 'react-icons/fi';
+import { Camera, ChevronDown } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-import './CameraButton.css';
+import { deviceButtonStyles } from '../../design/components/DeviceButton';
 
 interface CameraButtonProps {
   selectedLabel: string;
@@ -142,12 +142,12 @@ const CameraButton: React.FC<CameraButtonProps> = ({ selectedLabel, setSelectedL
     <div className="camera-button-container" ref={dropdownRef}>
       <button 
         onClick={() => setIsOpen(!isOpen)}   
-        className={`camera-button ${isOpen ? 'active' : ''}`}
+        css={deviceButtonStyles.button}
       >
-        <div className="button-content">
-          <FiCamera size={20} />
+        <div css={deviceButtonStyles.content}>
+          <Camera size={20} />
           <span>{selectedLabel}</span>
-          <FiChevronDown 
+          <ChevronDown 
             size={16} 
             className={`dropdown-icon ${isOpen ? 'open' : ''}`}
           />

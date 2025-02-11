@@ -1,104 +1,155 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { useNavigate, Link } from 'react-router-dom';
+import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { authService } from '../services/auth';
+import './css/Login.css';
 
 export default function Login() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    toast.success('Login realizado com sucesso!');
-    navigate('/video');
+  const validateField = (field: "email" | "password", value: string) => {
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [field]: value.trim() ? "" : "O campo não pode ser vazio.",
+    }));
   };
-  
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    let newErrors: { email?: string; password?: string } = {};
+    if (!email.trim()) newErrors.email = "O campo não pode ser vazio.";
+    if (!password.trim()) newErrors.password = "O campo não pode ser vazio.";
+
+    setErrors(newErrors);
+
+    if (!newErrors.email && !newErrors.password) {
+      setIsLoading(true);
+      try {
+        const success = await authService.login(email, password);
+        if (success) {
+          const candidateId = authService.getCandidateId();
+          console.log('Candidato ID:', candidateId); // Debug
+          if (candidateId) {
+            navigate(`/entrevista/${candidateId}`);
+          } else {
+            console.error('ID do candidato não encontrado após login');
+            toast.error('Erro ao recuperar dados do usuário');
+          }
+        }
+      } catch (error) {
+        console.error('Erro no login:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
+  const handleSocialLogin = async (provider: 'google' | 'linkedin') => {
+    setIsLoading(true);
+    const success = await authService.loginWithProvider(provider);
+    if (success) {
+      console.log('Redirecionando para autenticação...');
+    }
+    setIsLoading(false);
+  };
+
   return (
-    <div className="min-h-screen flex">
-      {/* Left side with image */}
-      <div className="hidden lg:flex lg:w-1/2 bg-white items-center justify-center p-12">
-        <div className="max-w-lg">
-          <img
-            src="/src/public/webcoploy.png"
-            alt="Coploy Logo"
-            className="w-full rounded-lg"
-          />
-          <h2 className="text-center mt-12 text-lg font-medium text-gray-800">
-            O futuro do recrutamento é agora.
-          </h2>
-        </div>
+    <div className="auth-container">
+      <div className="logo-container">
+        <div className="logo-placeholder"></div>
       </div>
+      
+      <div className="auth-content">
+        <div className="auth-grid">
+          <div className="auth-left">
+            <div className="auth-form-container">
+              <h1 className="auth-title">Bem-vindo de volta</h1>
+              <p className="auth-subtitle">Entre com sua conta para continuar</p>
 
-      {/* Right side with login form */}
-      <div className="flex-1 flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8 bg-white">
-        <div className="max-w-md w-full space-y-8">
-          <div>
-            <h2 className="text-center text-xl font-medium text-gray-900">
-              Olá, seja bem-vindo ao Coploy
-            </h2>
+              <div className="social-buttons">
+                <button 
+                  onClick={() => handleSocialLogin('google')}
+                  className="social-button google"
+                  disabled={isLoading}
+                >
+                  <img src="https://www.google.com/favicon.ico" alt="Google" />
+                  Continuar com Google
+                </button>
+                <button 
+                  onClick={() => handleSocialLogin('linkedin')}
+                  className="social-button linkedin"
+                  disabled={isLoading}
+                >
+                  <img src="https://www.linkedin.com/favicon.ico" alt="LinkedIn" />
+                  Continuar com LinkedIn
+                </button>
+              </div>
+
+              <div className="divider">
+                <span>ou</span>
+              </div>
+
+              <form onSubmit={handleSubmit} className="auth-form">
+                <div className="form-group">
+                  <div className={`input-container ${errors.email ? 'error' : ''}`}>
+                    <Mail className="input-icon" size={20} />
+                    <input
+                      type="email"
+                      placeholder="Email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      onBlur={(e) => validateField("email", e.target.value)}
+                      disabled={isLoading}
+                    />
+                  </div>
+                  {errors.email && <span className="error-message">{errors.email}</span>}
+                </div>
+
+                <div className="form-group">
+                  <div className={`input-container ${errors.password ? 'error' : ''}`}>
+                    <Lock className="input-icon" size={20} />
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Senha"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      onBlur={(e) => validateField("password", e.target.value)}
+                      disabled={isLoading}
+                    />
+                    <button
+                      type="button"
+                      className="password-toggle"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
+                  </div>
+                  {errors.password && <span className="error-message">{errors.password}</span>}
+                </div>
+
+                <button 
+                  type="submit" 
+                  className="submit-button"
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'Entrando...' : 'Entrar'}
+                </button>
+              </form>
+
+              <p className="auth-footer">
+                Não tem uma conta? <Link to="/signup">Cadastre-se</Link>
+              </p>
+            </div>
           </div>
-
-          <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-            <div className="space-y-4">
-              <div>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Mail className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <input
-                    type="email"
-                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-full text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#00F9F4] focus:border-transparent"
-                    placeholder="Login"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Lock className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    className="block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#00F9F4] focus:border-transparent"
-                    placeholder="Senha"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-5 w-5 text-gray-400" />
-                    ) : (
-                      <Eye className="h-5 w-5 text-gray-400" />
-                    )}
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center">
-              <input
-                id="remember-me"
-                name="remember-me"
-                type="checkbox"
-                className="h-4 w-4 text-[#00F9F4] focus:ring-[#00F9F4] border-gray-300 rounded"
-              />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
-                Lembrar e-mail
-              </label>
-            </div>
-
-            <div>
-              <button
-                type="submit"
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent rounded-full text-sm font-medium text-black bg-[#FFE070] hover:bg-[#FFD700] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FFE070]"
-              >
-                Login
-              </button>
-            </div>
-          </form>
+          
+          <div className="auth-right">
+            <div className="image-placeholder"></div>
+          </div>
         </div>
       </div>
     </div>

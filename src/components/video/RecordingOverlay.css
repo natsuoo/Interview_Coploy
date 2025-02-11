@@ -1,9 +1,10 @@
 .recording-overlay {
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: 24px;
+  left: 108px;
   z-index: 100;
-  width: 120px;
+  display: flex;
+  align-items: center;
 }
 
 .recording-indicator {
@@ -11,7 +12,7 @@
   align-items: center;
   gap: 8px;
   background-color: rgba(0, 0, 0, 0.349);
-  padding: 6px 6px 6px 6px;
+  padding: 8px 14px;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
@@ -23,11 +24,10 @@
 }
 
 .recording-dot {
-  width: 14px;
-  height: 14px;
+  width: 8px;
+  height: 8px;
   background-color: #ff4444;
   border-radius: 50%;
-  margin-left: 4px;
   animation: pulse 1.5s ease-in-out infinite;
 }
 
@@ -35,16 +35,31 @@
   color: white;
   font-size: 14px;
   font-weight: 400;
+  font-family: 'Urbanist', sans-serif;
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  align-items: center;
+  gap: 8px;
 }
 
 .time-remaining {
-  font-size: 12px;
-  opacity: 0.8;
   font-family: 'Urbanist', sans-serif;
   color: #fff;
+  opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+  .recording-overlay {
+    top: 45px;
+    left: 80px;
+  }
+
+  .recording-indicator {
+    padding: 6px 12px;
+  }
+
+  .recording-text {
+    font-size: 12px;
+  }
 }
 
 @keyframes pulse {

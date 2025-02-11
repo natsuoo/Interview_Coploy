@@ -21,7 +21,6 @@ const AudioSpectrum: React.FC<AudioSpectrumProps> = ({ audioStream }) => {
     analyserRef.current = analyser;
     source.connect(analyser);
     
-    // Reduzido para ter menos barras, mas mais largas
     analyser.fftSize = 128;
     analyser.smoothingTimeConstant = 0.8;
     
@@ -51,23 +50,20 @@ const AudioSpectrum: React.FC<AudioSpectrumProps> = ({ audioStream }) => {
       
       analyser.getByteFrequencyData(dataArray);
       
-      // Limpa o canvas com fundo transparente
       ctx.clearRect(0, 0, WIDTH, HEIGHT);
       
-      // Aumentado a largura das barras e o espaçamento
       const barWidth = 3;
       const spacing = 4;
       let barHeight;
       
       // Desenha da esquerda para o centro
       for (let i = 0; i < bufferLength / 2; i++) {
-        barHeight = (dataArray[i] / 255) * (HEIGHT / 1.5); // Aumentado a altura máxima
+        barHeight = (dataArray[i] / 255) * (HEIGHT / 1.5);
         const y = (HEIGHT / 2) - (barHeight / 2);
         
         const x = CENTER - (i * (barWidth + spacing));
         
-        // Rosa mais vibrante e menos transparente
-        ctx.fillStyle = 'rgba(244, 114, 182, 0.8)';
+        ctx.fillStyle = '#eefe3f';
         ctx.fillRect(x, y, barWidth, barHeight);
       }
       
@@ -78,7 +74,7 @@ const AudioSpectrum: React.FC<AudioSpectrumProps> = ({ audioStream }) => {
         
         const x = CENTER + (i * (barWidth + spacing));
         
-        ctx.fillStyle = 'rgba(244, 114, 182, 0.8)';
+        ctx.fillStyle = '#eefe3f';
         ctx.fillRect(x, y, barWidth, barHeight);
       }
     };

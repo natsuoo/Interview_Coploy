@@ -84,17 +84,17 @@ const VideoRecording: React.FC = () => {
           { candidato_id }
         );
         
-        const { pergunta_atual, total_perguntas, perguntas_restantes } = response.data;
+        const { pergunta, total_perguntas, perguntas_restantes } = response.data;
         
         setSession({
           id: response.data.id,
           candidato_id: response.data.candidato_id,
-          pergunta_atual,
+          pergunta,
           total_perguntas,
           perguntas_restantes
         });
         
-        setTimeRemaining(pergunta_atual.tempo_maximo || 120);
+        setTimeRemaining(pergunta.tempo_maximo || 120);
       } catch (error) {
         console.error("Erro ao iniciar entrevista:", error);
         toast.error("Não foi possível iniciar a entrevista");
@@ -108,7 +108,7 @@ const VideoRecording: React.FC = () => {
   }, [entrevistaId, navigate]);
 
   const startTimer = () => {
-    const maxTime = session?.pergunta_atual?.tempo_maximo || 120;
+    const maxTime = session?.pergunta?.tempo_maximo || 120;
     setTimeRemaining(maxTime);
     
     const timer = setInterval(() => {
@@ -214,7 +214,7 @@ const VideoRecording: React.FC = () => {
 
       formData.append('video', videoFile);
       formData.append('candidato_id', session?.candidato_id || '');
-      formData.append('pergunta_atual', session?.pergunta_atual.ordem.toString() || '');
+      formData.append('pergunta', session?.pergunta.ordem.toString() || '');
 
       const response = await axios.post(
         `${API_URL}/entrevistas/${session?.id}/responder`,
@@ -239,17 +239,17 @@ const VideoRecording: React.FC = () => {
           ...session,
           id: response.data.id,
           candidato_id: response.data.candidato_id,
-          pergunta_atual: response.data.pergunta ? {
+          pergunta: {
             ...response.data.pergunta,
             texto: response.data.pergunta.texto
-          } : null,
+          },
           total_perguntas: response.data.total_perguntas,
           perguntas_restantes: response.data.perguntas_restantes
         };
         
         setSession(novaSession);
-        setTimeRemaining(response.data.pergunta?.tempo_maximo || 120);
-      }
+        setTimeRemaining(response.data.pergunta.tempo_maximo || 120);
+              }
 
     } catch (error) {
       console.error('❌ Erro ao enviar vídeo:', error);
@@ -295,7 +295,7 @@ const VideoRecording: React.FC = () => {
         className="absolute top-4 left-4 h-20 z-10"
       />
       <div className="top-text">
-        {session?.pergunta_atual?.texto || 'Carregando pergunta...'}
+        {session?.pergunta?.texto || 'Carregando pergunta...'}
       </div>
       <div className="video-container">
         <div className="overlay-top"></div>

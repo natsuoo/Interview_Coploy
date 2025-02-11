@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import './AudioSpectrum.css';
+import { audioSpectrumStyles } from '../../design/components/AudioSpectrum';
 
 interface AudioSpectrumProps {
   audioStream: MediaStream;
@@ -55,7 +55,7 @@ const AudioSpectrum: React.FC<AudioSpectrumProps> = ({ audioStream }) => {
         ctx.beginPath();
         ctx.moveTo(x1, y1);
         ctx.lineTo(x2, y2);
-        ctx.strokeStyle = `rgb(255, 255, 255)`;
+        ctx.strokeStyle = '#ffffff';
         ctx.lineWidth = 2;
         ctx.stroke();
       }
@@ -74,12 +74,16 @@ const AudioSpectrum: React.FC<AudioSpectrumProps> = ({ audioStream }) => {
   }, [audioStream]);
 
   return (
-    <canvas 
-      ref={canvasRef} 
-      width={200} 
-      height={200} 
-      className="audio-spectrum"
-    />
+    <div css={audioSpectrumStyles.container}>
+      <div css={audioSpectrumStyles.wrapper}>
+        <canvas 
+          ref={canvasRef} 
+          width={200} 
+          height={200} 
+          css={audioSpectrumStyles.canvas}
+        />
+      </div>
+    </div>
   );
 };
 

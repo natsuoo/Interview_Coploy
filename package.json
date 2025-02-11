@@ -9,15 +9,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.0",
+    "@emotion/react": "^11.11.3",
+    "@emotion/styled": "^11.11.0",
     "@fastify/cors": "^10.0.2",
     "@fastify/multipart": "^9.0.3",
     "@ffmpeg/core": "^0.12.10",
     "@ffmpeg/ffmpeg": "^0.12.15",
     "@ffmpeg/util": "^0.12.2",
-    "@mui/icons-material": "^6.4.3",
-    "@mui/material": "^6.4.3",
+    "@supabase/supabase-js": "^2.39.7",
     "@types/node": "^22.13.1",
     "axios": "^1.7.9",
     "cors": "^2.8.5",
@@ -37,7 +36,6 @@
     "recordrtc": "^5.6.2"
   },
   "devDependencies": {
-    "@rollup/rollup-win32-x64-msvc": "^4.34.6",
     "@types/react": "^18.2.56",
     "@types/react-dom": "^18.2.19",
     "@types/recordrtc": "^5.6.14",

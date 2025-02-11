@@ -1,5 +1,5 @@
 import React from 'react';
-import './RecordingOverlay.css';
+import { recordingOverlayStyles } from '../../design/components/RecordingOverlay';
 
 interface RecordingOverlayProps {
   isRecording: boolean;
@@ -21,17 +21,17 @@ const RecordingOverlay: React.FC<RecordingOverlayProps> = ({
   };
 
   return (
-    <div className="recording-overlay">
-      <div className={`recording-indicator ${showWarning ? 'warning' : ''}`}>
-        <div className="recording-dot"></div>
-        <span className="recording-text">
+    <div css={recordingOverlayStyles.container}>
+      <div css={recordingOverlayStyles.indicator} className={showWarning ? 'warning' : ''}>
+        <div css={recordingOverlayStyles.dot} />
+        <div css={recordingOverlayStyles.text}>
           Gravando
           {timeRemaining !== null && (
-            <div className="time-remaining">
+            <span css={recordingOverlayStyles.timeRemaining}>
               {formatTime(timeRemaining || 0)}
-            </div>
+            </span>
           )}
-        </span>
+        </div>
       </div>
     </div>
   );

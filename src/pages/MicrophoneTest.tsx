@@ -1,10 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { FiMic, FiPlay } from 'react-icons/fi';
+import { Mic, Play } from 'lucide-react';
 import '../styles/MicrophoneTest.css';
 import AudioTestSpectrum from '../components/video/AudioTestSpectrum';
 import logo from '../public/logo.png';
-
 
 const MicrophoneTest: React.FC = () => {
   const navigate = useNavigate();
@@ -16,7 +15,6 @@ const MicrophoneTest: React.FC = () => {
   const [selectedMicrophone, setSelectedMicrophone] = useState<string>('');
   const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
   const [hasMicrophoneAccess, setHasMicrophoneAccess] = useState(false);
-
 
   const startRecording = async () => {
     try {
@@ -60,11 +58,9 @@ const MicrophoneTest: React.FC = () => {
   useEffect(() => {
     const initializeMicrophones = async () => {
       try {
-        // Primeiro solicita permissão para acessar o áudio
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        stream.getTracks().forEach(track => track.stop()); // Para a stream inicial
+        stream.getTracks().forEach(track => track.stop());
 
-        // Agora enumera os dispositivos para obter os labels
         const devices = await navigator.mediaDevices.enumerateDevices();
         const audioDevices = devices.filter(device => device.kind === 'audioinput');
         setMicrophones(audioDevices);
@@ -91,24 +87,13 @@ const MicrophoneTest: React.FC = () => {
 
   return (
     <div className="microphone-test-container">
-      <div className="logo-container">
-        <img src={logo} alt="Logo" className="logo" /> 
-      </div>
+      <img src={logo} alt="Logo" className="logo" />
 
       <div className="test-content">
-        <h1 className="welcome-title">Olá Nome Completo</h1>
+        <h1 className="welcome-title">Configuração do Microfone</h1>
         
         <p className="test-instruction">
-          Antes de iniciarmos sua entrevista, vamos testar seu microfone!
-        </p>
-        
-        <div className="test-steps">
-          Clique em 'Iniciar gravação' e, após finalizar, clique em 'Reproduzir áudio'. 
-          Ouça o áudio até o fim para verificar se seu microfone está funcionando corretamente.
-        </div>
-        
-        <p className="device-instruction">
-          Caso não esteja, recomendamos trocar o dispositivo através do seletor ao lado do player.
+          Vamos verificar se seu microfone está funcionando corretamente
         </p>
 
         <div className="test-area">
@@ -119,20 +104,21 @@ const MicrophoneTest: React.FC = () => {
           </div>
 
           <div className="controls-section">
-            <h2 className="test-subtitle">Teste seu microfone</h2>
+            <h2 className="test-subtitle">Teste seu Microfone</h2>
+            
             <p className="verification-text">
-              Verifique se seu microfone está funcionando corretamente antes de iniciar a entrevista.
+              Grave uma amostra de áudio e reproduza para verificar a qualidade
             </p>
 
             <div className="microphone-selector">
-              <label>Microfones:</label>
+              <label>Selecione seu microfone:</label>
               <select 
                 value={selectedMicrophone}
                 onChange={(e) => setSelectedMicrophone(e.target.value)}
               >
-                {microphones.map((mic, index) => (
-                  <option key={index} value={mic.deviceId}>
-                    {mic.label || `Microfone ${index + 1}`}
+                {microphones.map((mic) => (
+                  <option key={mic.deviceId} value={mic.deviceId}>
+                    {mic.label || `Microfone ${microphones.indexOf(mic) + 1}`}
                   </option>
                 ))}
               </select>
@@ -143,7 +129,7 @@ const MicrophoneTest: React.FC = () => {
                 className={`record-button ${isRecording ? 'recording' : ''}`}
                 onClick={isRecording ? stopRecording : startRecording}
               >
-                <FiMic />
+                <Mic size={18} />
                 {isRecording ? 'Parar' : 'Gravar'}
               </button>
 
@@ -155,7 +141,7 @@ const MicrophoneTest: React.FC = () => {
                     audio.play();
                   }}
                 >
-                  <FiPlay />
+                  <Play size={18} />
                   Reproduzir
                 </button>
               )}
@@ -169,7 +155,7 @@ const MicrophoneTest: React.FC = () => {
               className="continue-button"
               onClick={handleContinue}
             >
-              Continuar para Teste de Câmera
+              Continuar
             </button>
           </div>
         )}
@@ -178,4 +164,4 @@ const MicrophoneTest: React.FC = () => {
   );
 };
 
-export default MicrophoneTest; 
+export default MicrophoneTest;
