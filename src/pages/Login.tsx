@@ -29,23 +29,11 @@ export default function Login() {
 
     if (!newErrors.email && !newErrors.password) {
       setIsLoading(true);
-      try {
-        const success = await authService.login(email, password);
-        if (success) {
-          const candidateId = authService.getCandidateId();
-          console.log('Candidato ID:', candidateId); // Debug
-          if (candidateId) {
-            navigate(`/entrevista/${candidateId}`);
-          } else {
-            console.error('ID do candidato não encontrado após login');
-            toast.error('Erro ao recuperar dados do usuário');
-          }
-        }
-      } catch (error) {
-        console.error('Erro no login:', error);
-      } finally {
-        setIsLoading(false);
+      const success = await authService.login(email, password);
+      if (success) {
+        navigate('/video');
       }
+      setIsLoading(false);
     }
   };
 
@@ -53,6 +41,7 @@ export default function Login() {
     setIsLoading(true);
     const success = await authService.loginWithProvider(provider);
     if (success) {
+      // O redirecionamento será feito pelo Supabase
       console.log('Redirecionando para autenticação...');
     }
     setIsLoading(false);
