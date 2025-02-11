@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { PersonOutline, PasswordSharp, VisibilityOutlined, VisibilityOffOutlined } from '@mui/icons-material';
 import { authService } from '../../services/auth';
 import './Login.css';
-import webcoploy from '../../public/webcoploy.png';
+import webcoploy from '../../public/img_signup.png';
 
 
 export default function Login() {

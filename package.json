@@ -37,6 +37,7 @@
     "recordrtc": "^5.6.2"
   },
   "devDependencies": {
+    "@rollup/rollup-win32-x64-msvc": "^4.34.6",
     "@types/react": "^18.2.56",
     "@types/react-dom": "^18.2.19",
     "@types/recordrtc": "^5.6.14",

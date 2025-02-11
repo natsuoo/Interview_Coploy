@@ -239,17 +239,17 @@ const VideoRecording: React.FC = () => {
           ...session,
           id: response.data.id,
           candidato_id: response.data.candidato_id,
-          pergunta_atual: {
-            ...response.data.pergunta_atual,
-            texto: response.data.pergunta_atual.texto
-          },
+          pergunta_atual: response.data.pergunta ? {
+            ...response.data.pergunta,
+            texto: response.data.pergunta.texto
+          } : null,
           total_perguntas: response.data.total_perguntas,
           perguntas_restantes: response.data.perguntas_restantes
         };
         
         setSession(novaSession);
-        setTimeRemaining(response.data.pergunta_atual.tempo_maximo || 120);
-              }
+        setTimeRemaining(response.data.pergunta?.tempo_maximo || 120);
+      }
 
     } catch (error) {
       console.error('❌ Erro ao enviar vídeo:', error);
