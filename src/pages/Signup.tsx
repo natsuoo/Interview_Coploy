@@ -68,7 +68,7 @@ export default function SignUp() {
         linkedin_url: ''
       });
       if (success) {
-        navigate('/login');
+        navigate('/video');
       }
       setIsLoading(false);
     }

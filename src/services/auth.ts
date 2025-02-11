@@ -25,8 +25,8 @@ class AuthService {
         return false;
       }
 
-      // 2. Criar usuário na autenticação com email confirmation desabilitado
-      const { data, error: authError } = await supabase.auth.signUp({
+      // 2. Criar usuário na autenticação
+      const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -34,101 +34,86 @@ class AuthService {
             nome,
             telefone,
             linkedin_url
-          },
-          emailRedirectTo: `${window.location.origin}/auth/callback`
+          }
         }
       });
 
       if (authError) {
-        if (authError.message.includes('rate_limit')) {
-          toast.error('Por favor, aguarde alguns segundos antes de tentar novamente');
-          return false;
-        }
         if (authError.message.includes('already registered')) {
           toast.error('Este email já está cadastrado');
           return false;
         }
-        console.error("Erro ao criar usuário:", authError);
-        toast.error('Erro ao criar usuário');
+        throw authError;
+      }
+
+      if (!authData.user) {
+        toast.error('Falha ao criar usuário');
         return false;
       }
 
-      if (!data.user) {
-        toast.error('Erro ao criar usuário');
-        return false;
-      }
-
-      // 3. Inserir na tabela candidatos
-      const { error: insertError } = await supabase
+      // 3. Inserir dados na tabela candidatos
+      const { error: dbError } = await supabase
         .from('candidatos')
-        .insert([{
-          user_id: data.user.id,
+        .insert({
           nome,
           email,
           telefone,
-          linkedin_url
-        }]);
+          linkedin_url,
+          user_id: authData.user.id
+        });
 
-      if (insertError) {
-        console.error("Erro ao inserir na tabela candidatos:", insertError);
-        
-        // Se falhar ao inserir na tabela candidatos, tenta fazer rollback do usuário
-        try {
-          await supabase.auth.signOut();
-        } catch (e) {
-          console.error("Erro ao fazer rollback do usuário:", e);
+      if (dbError) {
+        if (dbError.code === '23505') { // Código de erro de unique violation
+          toast.error('Este email já está cadastrado');
+          return false;
         }
-        
-        toast.error('Erro ao criar perfil');
-        return false;
+        throw dbError;
       }
 
-      toast.success('Cadastro realizado com sucesso! Por favor, faça login.');
+      toast.success('Cadastro realizado com sucesso!');
       return true;
     } catch (error) {
       console.error('Erro no cadastro:', error);
-      toast.error('Erro ao realizar cadastro');
+      
+      // Tratamento específico para erros conhecidos
+      if (error instanceof Error) {
+        if (error.message.includes('duplicate key')) {
+          toast.error('Este email já está cadastrado');
+        } else if (error.message.includes('invalid email')) {
+          toast.error('Email inválido');
+        } else if (error.message.includes('password')) {
+          toast.error('Senha inválida. A senha deve ter pelo menos 6 caracteres');
+        } else {
+          toast.error('Falha ao realizar cadastro. Tente novamente.');
+        }
+      } else {
+        toast.error('Falha ao realizar cadastro. Tente novamente.');
+      }
+      
       return false;
     }
   }
 
   async login(email: string, password: string): Promise<boolean> {
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
-        password
+        password,
       });
 
       if (error) {
-        console.error("Erro no login:", error.message);
         if (error.message.includes('Invalid login credentials')) {
           toast.error('Email ou senha incorretos');
-        } else if (error.message.includes('Email not confirmed')) {
-          toast.error('Por favor, confirme seu email antes de fazer login');
-        } else {
-          toast.error('Erro ao fazer login');
+          return false;
         }
-        return false;
-      }
-
-      // Verifica se existe na tabela candidatos
-      const { data: candidato, error: candidatoError } = await supabase
-        .from('candidatos')
-        .select('*')
-        .eq('user_id', data.user.id)
-        .single();
-
-      if (candidatoError || !candidato) {
-        toast.error('Perfil não encontrado');
-        await this.logout();
-        return false;
+        throw error;
       }
 
       toast.success('Login realizado com sucesso!');
       return true;
     } catch (error) {
       console.error('Erro no login:', error);
-      toast.error('Erro ao realizar login');
+      toast.error('Falha ao realizar login. Verifique suas credenciais.');
       return false;
     }
   }
@@ -150,7 +135,7 @@ class AuthService {
       return true;
     } catch (error) {
       console.error('Erro no login social:', error);
-      toast.error('Erro ao realizar login social');
+      toast.error('Falha ao realizar login. Tente novamente.');
       return false;
     }
   }
@@ -162,12 +147,8 @@ class AuthService {
       toast.success('Logout realizado com sucesso!');
     } catch (error) {
       console.error('Erro no logout:', error);
-      toast.error('Erro ao realizar logout');
+      toast.error('Falha ao realizar logout.');
     }
-  }
-
-  isAuthenticated(): boolean {
-    return !!this.getSession();
   }
 
   async getSession() {
@@ -179,7 +160,7 @@ class AuthService {
     return session;
   }
 
-  async getUser() {
+  async getCurrentUser() {
     const { data: { user }, error } = await supabase.auth.getUser();
     if (error) {
       console.error('Erro ao obter usuário:', error);
