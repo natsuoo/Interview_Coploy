@@ -1,47 +1,31 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { User, Eye, EyeOff } from 'lucide-react';
-import { AuthLayout } from '../components/layout/AuthLayout';
-import { useAuth } from '../hooks/useAuth';
-import { ROUTES } from '../config/constants';
-import '../styles/auth.css';
+import { useNavigate, Link } from 'react-router-dom';
+import { Mail, Lock, Eye, EyeOff, User, Phone } from 'lucide-react';
+import { authService } from '../services/auth';
+import './css/Login.css';
 
 export default function SignUp() {
-  const { signup, isLoading } = useAuth();
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
     nome: '',
     email: '',
     telefone: '',
-    linkedin_url: '',
     password: '',
     confirmPassword: ''
   });
   const [errors, setErrors] = useState<{[key: string]: string}>({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   const validateField = (field: string, value: string) => {
     const newErrors: {[key: string]: string} = {};
 
     switch (field) {
-      case 'nome':
-        if (value.trim().length < 3) {
-          newErrors.nome = 'O nome deve ter pelo menos 3 caracteres';
-        }
-        break;
       case 'email':
-        if (!value.includes('@') || !value.includes('.')) {
+        if (!value.includes('@')) {
           newErrors.email = 'Email inválido';
-        }
-        break;
-      case 'telefone':
-        if (value.replace(/\D/g, '').length < 10) {
-          newErrors.telefone = 'Telefone inválido';
-        }
-        break;
-      case 'linkedin_url':
-        if (!value.includes('linkedin.com/')) {
-          newErrors.linkedin_url = 'URL do LinkedIn inválida';
         }
         break;
       case 'password':
@@ -64,122 +48,200 @@ export default function SignUp() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    let formattedValue = value;
-
-    if (name === 'telefone') {
-      formattedValue = value.replace(/\D/g, '');
-      if (formattedValue.length <= 11) {
-        if (formattedValue.length > 2) {
-          formattedValue = `(${formattedValue.slice(0,2)}) ${formattedValue.slice(2)}`;
-        }
-        if (formattedValue.length > 9) {
-          formattedValue = `${formattedValue.slice(0,9)}-${formattedValue.slice(9)}`;
-        }
-      }
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    
+    if (!acceptedTerms) {
+      setErrors(prev => ({ ...prev, terms: 'Você precisa aceitar os termos de uso' }));
+      return;
     }
-
-    setFormData(prev => ({ ...prev, [name]: formattedValue }));
-    if (errors[name]) {
-      validateField(name, formattedValue);
-    }
-
-    if (name === 'password' && formData.confirmPassword) {
-      validateField('confirmPassword', formData.confirmPassword);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
 
     const isValid = Object.keys(formData).every(field => 
       validateField(field, formData[field as keyof typeof formData])
     );
 
     if (isValid) {
+      setIsLoading(true);
       const { confirmPassword, ...signupData } = formData;
-      await signup(signupData);
+      const success = await authService.signup({
+        ...signupData,
+        linkedin_url: ''
+      });
+      if (success) {
+        navigate('/login');
+      }
+      setIsLoading(false);
     }
   };
 
+  const handleSocialSignup = async (provider: 'google' | 'linkedin') => {
+    setIsLoading(true);
+    const success = await authService.loginWithProvider(provider);
+    if (success) {
+      // O redirecionamento será feito pelo Supabase
+      console.log('Redirecionando para autenticação...');
+    }
+    setIsLoading(false);
+  };
+
   return (
-    <AuthLayout
-      title="Cadastre-se no Coploy"
-      subtitle="O futuro do recrutamento é agora."
-    >
-      <form className="auth-form" onSubmit={handleSubmit}>
-        {[
-          { name: 'nome', label: 'Nome Completo', type: 'text' },
-          { name: 'email', label: 'Email', type: 'email' },
-          { name: 'telefone', label: 'Telefone', type: 'tel' },
-          { name: 'linkedin_url', label: 'URL do LinkedIn', type: 'url' },
-          { name: 'password', label: 'Senha', type: 'password' },
-          { name: 'confirmPassword', label: 'Confirmar Senha', type: 'password' }
-        ].map(field => (
-          <div className="input-group" key={field.name}>
-            <div className={`input-wrapper ${errors[field.name] ? "error" : ""}`}>
-              <span className="input-icon">
-                <User className="h-4 w-4" />
-              </span>
-              <input
-                type={
-                  field.type === 'password'
-                    ? (field.name === 'password' ? (showPassword ? 'text' : 'password') : (showConfirmPassword ? 'text' : 'password'))
-                    : field.type
-                }
-                name={field.name}
-                className="auth-input"
-                placeholder=" "
-                value={formData[field.name as keyof typeof formData]}
-                onChange={handleChange}
-                onBlur={(e) => validateField(field.name, e.target.value)}
-              />
-              <label>{field.label}</label>
-              {field.type === 'password' && (
-                <button
-                  type="button"
-                  className="password-toggle"
-                  onClick={() => field.name === 'password' 
-                    ? setShowPassword(!showPassword)
-                    : setShowConfirmPassword(!showConfirmPassword)
-                  }
+    <div className="auth-container">
+      <div className="logo-container">
+        <div className="logo-placeholder"></div>
+      </div>
+      
+      <div className="auth-content">
+        <div className="auth-grid">
+          <div className="auth-left">
+            <div className="auth-form-container">
+              <h1 className="auth-title">Bem-vindo a Coploy</h1>
+              <p className="auth-subtitle">Preencha seus dados para começar</p>
+
+              <div className="social-buttons">
+                <button 
+                  onClick={() => handleSocialSignup('google')}
+                  className="social-button google"
+                  disabled={isLoading}
                 >
-                  {(field.name === 'password' ? showPassword : showConfirmPassword)
-                    ? <EyeOff className="h-4 w-4" />
-                    : <Eye className="h-4 w-4" />
-                  }
+                  <img src="https://www.google.com/favicon.ico" alt="Google" />
+                  Continuar com Google
                 </button>
-              )}
+                <button 
+                  onClick={() => handleSocialSignup('linkedin')}
+                  className="social-button linkedin"
+                  disabled={isLoading}
+                >
+                  <img src="https://www.linkedin.com/favicon.ico" alt="LinkedIn" />
+                  Continuar com LinkedIn
+                </button>
+              </div>
+
+              <form onSubmit={handleSubmit} className="auth-form">
+                <div className="form-group">
+                  <div className={`input-container ${errors.nome ? 'error' : ''}`}>
+                    <User className="input-icon" size={20} />
+                    <input
+                      type="text"
+                      placeholder="Nome completo"
+                      value={formData.nome}
+                      onChange={(e) => setFormData({...formData, nome: e.target.value})}
+                      onBlur={(e) => validateField('nome', e.target.value)}
+                      disabled={isLoading}
+                    />
+                  </div>
+                  {errors.nome && <span className="error-message">{errors.nome}</span>}
+                </div>
+
+                <div className="form-group">
+                  <div className={`input-container ${errors.telefone ? 'error' : ''}`}>
+                    <Phone className="input-icon" size={20} />
+                    <input
+                      type="tel"
+                      placeholder="Telefone"
+                      value={formData.telefone}
+                      onChange={(e) => setFormData({...formData, telefone: e.target.value})}
+                      onBlur={(e) => validateField('telefone', e.target.value)}
+                      disabled={isLoading}
+                    />
+                  </div>
+                  {errors.telefone && <span className="error-message">{errors.telefone}</span>}
+                </div>
+
+                <div className="form-group">
+                  <div className={`input-container ${errors.email ? 'error' : ''}`}>
+                    <Mail className="input-icon" size={20} />
+                    <input
+                      type="email"
+                      placeholder="Email"
+                      value={formData.email}
+                      onChange={(e) => setFormData({...formData, email: e.target.value})}
+                      onBlur={(e) => validateField('email', e.target.value)}
+                      disabled={isLoading}
+                    />
+                  </div>
+                  {errors.email && <span className="error-message">{errors.email}</span>}
+                </div>
+
+                <div className="form-group">
+                  <div className={`input-container ${errors.password ? 'error' : ''}`}>
+                    <Lock className="input-icon" size={20} />
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Senha"
+                      value={formData.password}
+                      onChange={(e) => setFormData({...formData, password: e.target.value})}
+                      onBlur={(e) => validateField('password', e.target.value)}
+                      disabled={isLoading}
+                    />
+                    <button
+                      type="button"
+                      className="password-toggle"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
+                  </div>
+                  {errors.password && <span className="error-message">{errors.password}</span>}
+                </div>
+
+                <div className="form-group">
+                  <div className={`input-container ${errors.confirmPassword ? 'error' : ''}`}>
+                    <Lock className="input-icon" size={20} />
+                    <input
+                      type={showConfirmPassword ? "text" : "password"}
+                      placeholder="Confirmar senha"
+                      value={formData.confirmPassword}
+                      onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
+                      onBlur={(e) => validateField('confirmPassword', e.target.value)}
+                      disabled={isLoading}
+                    />
+                    <button
+                      type="button"
+                      className="password-toggle"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    >
+                      {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
+                  </div>
+                  {errors.confirmPassword && <span className="error-message">{errors.confirmPassword}</span>}
+                </div>
+
+                <div className="terms-checkbox">
+                  <label className="checkbox-container">
+                    <input 
+                      type="checkbox" 
+                      checked={acceptedTerms}
+                      onChange={(e) => setAcceptedTerms(e.target.checked)}
+                      disabled={isLoading}
+                    />
+                    <span className="checkmark"></span>
+                    <span className="terms-text">
+                      Aceito os <Link to="/privacy">termos de uso e a política de privacidade</Link>
+                    </span>
+                  </label>
+                  {errors.terms && <span className="error-message">{errors.terms}</span>}
+                </div>
+
+                <button 
+                  type="submit" 
+                  className="submit-button"
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'Criando conta...' : 'Criar conta'}
+                </button>
+              </form>
+
+              <p className="auth-footer">
+                Já tem uma conta? <Link to="/login">Entrar</Link>
+              </p>
             </div>
-            {errors[field.name] && (
-              <span className="error-message">{errors[field.name]}</span>
-            )}
           </div>
-        ))}
-
-        <div className="form-options">
-          <label className="custom-checkbox">
-            <input type="checkbox" required />
-            <span className="checkmark"></span>
-            Aceito os <strong>termos de uso</strong> e a <strong>política de privacidade</strong>
-          </label>
+          
+          <div className="auth-right">
+            <div className="image-placeholder"></div>
+          </div>
         </div>
-
-        <button 
-          type="submit" 
-          className="auth-button"
-          disabled={isLoading}
-        >
-          {isLoading ? 'Carregando...' : 'Cadastrar'}
-        </button>
-
-        <div className="auth-link">
-          <p>
-            Já tem uma conta? <Link to={ROUTES.LOGIN}>Faça login</Link>
-          </p>
-        </div>
-      </form>
-    </AuthLayout>
+      </div>
+    </div>
   );
 }
